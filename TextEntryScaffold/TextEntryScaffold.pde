@@ -19,18 +19,32 @@ float rectX = 200;
 float rectY = 200;
 //Variables for my silly implementation. You can delete this:
 char currentLetter = 'a';
+//centre of rect
 float centreX = rectX + sizeOfInputArea / 2;
 float centreY = rectX + sizeOfInputArea / 2;
-int numAreas = 7;
+//number of groups of letters
+int numAreas = 6;
+//angle of each group
 float ang = 2 * PI / numAreas;
+//radius of the "circle" that encloses the input square
 float radius = sqrt(pow(sizeOfInputArea, 2) + pow(sizeOfInputArea, 2)) / 2;
+//lines for drawing the groups
 float [][][] lines = new float[numAreas][2][2];
+//if mouse pressed in some area
 int inSomeArea;
+//a (1, 1) vector for calculating direction of swipe
 PVector lin = new PVector(1, 1);
 float pressMouseX = 0;
 float pressMouseY = 0;
-String [][] letters = {{"q", "r", "s", "t"}, {"u", "v", "w", "x"}, {"y", "z", " ", ""}, {"a", "b", "c", "d"}, {"e", "f", "g", "h"}, {"i", "j", "k", "l"},
+float pressTime = 0;
+//finger lift time
+float liftTime = 0;
+//swipe letters
+String [][] letters = {{"q", "r", "s", "t"}, {"u", "v", "w", "x"}, {"a", "b", "c", "d"}, {"e", "f", "g", "h"}, {"i", "j", "k", "l"},
 {"m", "n", "o", "p"}};
+//tap letters, empty strings mean noOp
+String [] tapLetters = {"y", "", "z", " ", "", "D"};
+
 //You can modify anything in here. This is just a basic implementation.
 void setup()
 {
@@ -41,6 +55,7 @@ void setup()
   size(1000, 1000); //Sets the size of the app. You may want to modify this to your device. Many phones today are 1080 wide by 1920 tall.
   textFont(createFont("Arial", 24)); //set the font to arial 24
   //noStroke(); //my code doesn't use any strokes.
+  //initialize lines for groups
   for(int i = 0; i < numAreas; i++)
   {
     lines[i][0][0] = centreX;
@@ -97,6 +112,7 @@ void draw()
     rect(200+sizeOfInputArea/2, 200+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2);*/ //draw right green button
     stroke(0);
     strokeWeight(1);
+    //draw lines and letters for groups
     for(int i = 0; i < numAreas; i++)
     {
       line(lines[i][0][0], lines[i][0][1], lines[i][1][0], lines[i][1][1]);
@@ -104,23 +120,24 @@ void draw()
       PVector dir1 = new PVector(lines[i][1][0] - lines[i][0][0], lines[i][0][1] - lines[i][1][1]);
       PVector dir2 = new PVector(lines[j][1][0] - lines[j][0][0], lines[j][0][1] - lines[j][1][1]);
       PVector dir3 = new PVector((dir1.x + dir2.x), (-(dir1.y + dir2.y)));
-      if(i == 0)
-      {
-        println(dir3);
-      }
       fill(255);
       text(letters[i][0], centreX + dir3.x / 3 - 20, centreY + dir3.y / 3 + 20);
       text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3);
-      if(letters[i][2] != " ")
+      text(letters[i][2], centreX + dir3.x / 3 + 20, centreY + dir3.y / 3 + 20);
+      text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 40);
+      if(tapLetters[i] == " ")
       {
-        text(letters[i][2], centreX + dir3.x / 3 + 20, centreY + dir3.y / 3 + 20);
+        text("-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
+      }
+      else if(tapLetters[i] == "D")
+      {
+        text("<-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
       }
       else
       {
-        text("_", centreX + dir3.x / 3 + 20, centreY + dir3.y / 3 + 20);
+        text(tapLetters[i], centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
       }
-      text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 40);
-      text(i, lines[i][1][0], lines[i][1][1]);
+      //text(i, lines[i][1][0], lines[i][1][1]);
     }
   }
 }
@@ -130,12 +147,16 @@ boolean didMouseClick(float x, float y, float w, float h) //simple function to d
   return (mouseX > x && mouseX<x+w && mouseY>y && mouseY<y+h); //check to see if it is in button bounds
 }
 
+//if pressed in some area
 int inArea()
 {
+  //if not in box then noOp
   if(!(mouseX > rectX && mouseX < rectX + sizeOfInputArea && mouseY > rectY && mouseY < rectY + sizeOfInputArea))
   {
     return -1;
   }
+  //line side test, there can be one pair of lines where they are on
+  //either side of the mouse press
   for(int i = 0; i < numAreas; i++)
   {
     float d1 = (mouseX - lines[i][0][0]) * (lines[i][1][1] - lines[i][0][1])
@@ -155,13 +176,13 @@ int inArea()
 
 void mousePressed()
 {
-  
   if(startTime != 0)
   {
     inSomeArea = inArea();
     pressMouseX = mouseX;
     pressMouseY = mouseY;
-    println(inSomeArea);
+    pressTime = millis();
+    //println(inSomeArea);
     //You are allowed to have a next button outside the 2" area
     if (didMouseClick(800, 00, 200, 200)) //check if click is in next button
     {
@@ -178,19 +199,41 @@ float angle(PVector v1, PVector v2) {
 
 void mouseReleased()
 {
+  liftTime = millis();
+  float endMouseX = mouseX;
+  float endMouseY = mouseY;
+  //direction of swipe
+  PVector dir = new PVector(endMouseX - pressMouseX, pressMouseY - endMouseY);
+  /*println(dir.x);
+  println(dir.y);
+  println(liftTime - pressTime);*/
   if(startTime == 0)
   {
     nextTrial();
   }
-  else
+  //if don't move much and fast press and lift then it's tap
+  //feel free to change this to whatever seems right for users
+  else if(abs(dir.x) < 2 && abs(dir.y) < 2 && liftTime - pressTime < 100)
   {
-    float endMouseX = mouseX;
-    float endMouseY = mouseY;
     if(inSomeArea != -1)
     {
-      PVector dir = new PVector(endMouseX - pressMouseX, pressMouseY - endMouseY);
+      if(tapLetters[inSomeArea] == "D")
+      {
+        currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
+      }
+      else
+      {
+        currentTyped += tapLetters[inSomeArea];
+      }
+    }
+  }
+  else
+  {
+    if(inSomeArea != -1)
+    {
       //println(dir);
-      println(degrees(angle(dir, lin)));
+      //println(degrees(angle(dir, lin)));
+      //if angle between swipe direction and (1,1) is within some range then it's some letter
       if(angle(dir, lin) <= TWO_PI && angle(dir, lin) > TWO_PI - PI / 2)
       {
         currentTyped += letters[inSomeArea][1];
