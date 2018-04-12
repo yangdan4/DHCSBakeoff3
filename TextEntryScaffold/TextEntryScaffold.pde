@@ -217,7 +217,7 @@ void mouseReleased()
   {
     if(inSomeArea != -1)
     {
-      if(tapLetters[inSomeArea] == "D")
+      if(tapLetters[inSomeArea] == "D" && currentTyped.length() > 0)
       {
         currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
       }
