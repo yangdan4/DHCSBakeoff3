@@ -121,10 +121,40 @@ void draw()
       PVector dir2 = new PVector(lines[j][1][0] - lines[j][0][0], lines[j][0][1] - lines[j][1][1]);
       PVector dir3 = new PVector((dir1.x + dir2.x), (-(dir1.y + dir2.y)));
       fill(255);
-      text(letters[i][0], centreX + dir3.x / 3 - 20, centreY + dir3.y / 3 + 20);
-      text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3);
-      text(letters[i][2], centreX + dir3.x / 3 + 20, centreY + dir3.y / 3 + 20);
-      text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 40);
+      
+      // serene -- increase text font upon selection
+      if (inArea() == i) {
+        textSize(30);
+        fill(255,215,0);
+        text(letters[i][0], centreX + dir3.x / 3 - 40, centreY + dir3.y / 3 + 20);
+        arrow(int(centreX + dir3.x / 3 - 50), int(centreY + dir3.y / 3 + 20), int(centreX + dir3.x / 3 - 80), int(centreY + dir3.y / 3 + 20));
+        text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3 - 20);
+        arrow(int(centreX + dir3.x / 3), int(centreY + dir3.y / 3 - 10), int(centreX + dir3.x / 3), int(centreY + dir3.y / 3 - 40));
+        text(letters[i][2], centreX + dir3.x / 3 + 40, centreY + dir3.y / 3 + 20);
+        text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 60);
+      }
+      else {
+        textSize(24);
+        text(letters[i][0], centreX + dir3.x / 3 - 20, centreY + dir3.y / 3 + 20);
+        text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3);
+        text(letters[i][2], centreX + dir3.x / 3 + 20, centreY + dir3.y / 3 + 20);
+        text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 40);
+      }
+      
+      // serene -- arrow visual
+      //if (inArea() > 0)
+      //{
+      //  println(inArea());
+      //  int currentGroup = inArea();
+      //  // x: centreX + dir3.x / 3, y: centreY + dir3.y / 3 + 20
+      //  int jcurr = (currentGroup + 1) % numAreas;
+      //  PVector dir1curr = new PVector(lines[currentGroup][1][0] - lines[currentGroup][0][0], lines[currentGroup][0][1] - lines[currentGroup][1][1]);
+      //  PVector dir2curr = new PVector(lines[jcurr][1][0] - lines[jcurr][0][0], lines[jcurr][0][1] - lines[jcurr][1][1]);
+      //  PVector dir3curr = new PVector((dir1curr.x + dir2curr.x), (-(dir1curr.y + dir2curr.y)));
+      //  arrow(int(centreX + dir3curr.x / 3), int(centreY + dir3curr.y / 3 + 20), int(centreX + dir3curr.x / 3 - 20), int(centreY + dir3curr.y / 3 + 20));
+        
+      //}  
+      
       if(tapLetters[i] == " ")
       {
         text("-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
@@ -139,8 +169,25 @@ void draw()
       }
       //text(i, lines[i][1][0], lines[i][1][1]);
     }
+    
+
   }
 }
+
+// source: https://processing.org/discourse/beta/num_1219607845.html
+void arrow(int x1, int y1, int x2, int y2) {
+  pushStyle();
+  stroke(255,215,0);
+  line(x1, y1, x2, y2);
+  pushMatrix();
+  translate(x2, y2);
+  float a = atan2(x1-x2, y2-y1);
+  rotate(a);
+  line(0, 0, -10, -10);
+  line(0, 0, 10, -10);
+  popMatrix();
+  popStyle();
+} 
 
 boolean didMouseClick(float x, float y, float w, float h) //simple function to do hit testing
 {
