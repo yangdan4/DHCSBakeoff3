@@ -123,29 +123,19 @@ void draw()
       fill(255);
       
       // serene -- increase text font upon selection
-      if (inArea() == i) {
+      if (inArea() == i && mousePressed) {
         pushStyle();
         textSize(30);
         fill(255,215,0);
-        text(letters[i][0], centreX + dir3.x / 3 - 40, centreY + dir3.y / 3 + 20);
-        arrow(int(centreX + dir3.x / 3 - 50), int(centreY + dir3.y / 3 + 15), int(centreX + dir3.x / 3 - 80), int(centreY + dir3.y / 3 + 15));
-        text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3 - 20);
-        arrow(int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 - 55), int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 - 85));
-        text(letters[i][2], centreX + dir3.x / 3 + 40, centreY + dir3.y / 3 + 20);
-        arrow(int(centreX + dir3.x / 3 + 65), int(centreY + dir3.y / 3 + 15), int(centreX + dir3.x / 3 + 95), int(centreY + dir3.y / 3 + 15));
-        text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 60);
-        arrow(int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 + 70), int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 + 100));
+        text(letters[i][0], int(mouseX-70), int(mouseY+10)); // left
+        arrow(int(mouseX), int(mouseY), int(mouseX-40), int(mouseY));
+        text(letters[i][1], int(mouseX-8), int(mouseY-55)); // top
+        arrow(int(mouseX), int(mouseY), int(mouseX), int(mouseY-40));
+        text(letters[i][2], int(mouseX+55), int(mouseY+10)); // right
+        arrow(int(mouseX), int(mouseY), int(mouseX+40), int(mouseY));
+        text(letters[i][3], int(mouseX-8), int(mouseY+70)); // bottom
+        arrow(int(mouseX), int(mouseY), int(mouseX), int(mouseY+40));
         popStyle();
-        // circle tap letters
-        //if (inArea() == 1) {
-        //  pushStyle();
-        //  stroke(255,215,0);
-        //  noFill();
-        //  ellipse(centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5, 30, 30);
-          
-        //  popStyle();
-        //}
-        //elipse();
       }
       else {
         textSize(24);
@@ -158,21 +148,21 @@ void draw()
       if(tapLetters[i] == " ")
       {
         text("-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
-        if (inArea() == 3) {
+        if (inArea() == 3 && mousePressed) {
           circle(centreX + dir3.x / 6, centreY + dir3.y / 6, 30);
         }
       }
       else if(tapLetters[i] == "D")
       {
         text("<-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
-        if (inArea() == 5) {
+        if (inArea() == 5 && mousePressed) {
           circle(centreX + dir3.x / 6 + 5, centreY + dir3.y / 6 - 5, 40);
         }
       }
       else
       {
         text(tapLetters[i], centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
-        if (inArea() == i && (tapLetters[i] == "y" || tapLetters[i] == "z")) {
+        if (inArea() == i && (tapLetters[i] == "y" || tapLetters[i] == "z") && mousePressed) {
           circle(centreX + dir3.x / 6 + 5, centreY + dir3.y / 6 - 5, 40);
         }
       }
@@ -187,7 +177,7 @@ void draw()
 void arrow(int x1, int y1, int x2, int y2) {
   pushStyle();
   stroke(255,215,0);
-  strokeWeight(3);
+  strokeWeight(2);
   line(x1, y1, x2, y2);
   pushMatrix();
   translate(x2, y2);
@@ -202,7 +192,7 @@ void arrow(int x1, int y1, int x2, int y2) {
 void circle(float x2, float y2, int rad) {
     pushStyle();
     stroke(255,215,0);
-    strokeWeight(4);
+    strokeWeight(3);
     noFill();
     ellipse(x2, y2, rad, rad);
     popStyle();
