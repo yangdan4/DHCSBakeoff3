@@ -124,14 +124,28 @@ void draw()
       
       // serene -- increase text font upon selection
       if (inArea() == i) {
+        pushStyle();
         textSize(30);
         fill(255,215,0);
         text(letters[i][0], centreX + dir3.x / 3 - 40, centreY + dir3.y / 3 + 20);
-        arrow(int(centreX + dir3.x / 3 - 50), int(centreY + dir3.y / 3 + 20), int(centreX + dir3.x / 3 - 80), int(centreY + dir3.y / 3 + 20));
+        arrow(int(centreX + dir3.x / 3 - 50), int(centreY + dir3.y / 3 + 15), int(centreX + dir3.x / 3 - 80), int(centreY + dir3.y / 3 + 15));
         text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3 - 20);
-        arrow(int(centreX + dir3.x / 3), int(centreY + dir3.y / 3 - 10), int(centreX + dir3.x / 3), int(centreY + dir3.y / 3 - 40));
+        arrow(int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 - 55), int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 - 85));
         text(letters[i][2], centreX + dir3.x / 3 + 40, centreY + dir3.y / 3 + 20);
+        arrow(int(centreX + dir3.x / 3 + 65), int(centreY + dir3.y / 3 + 15), int(centreX + dir3.x / 3 + 95), int(centreY + dir3.y / 3 + 15));
         text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 60);
+        arrow(int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 + 70), int(centreX + dir3.x / 3) + 5, int(centreY + dir3.y / 3 + 100));
+        popStyle();
+        // circle tap letters
+        //if (inArea() == 1) {
+        //  pushStyle();
+        //  stroke(255,215,0);
+        //  noFill();
+        //  ellipse(centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5, 30, 30);
+          
+        //  popStyle();
+        //}
+        //elipse();
       }
       else {
         textSize(24);
@@ -141,31 +155,26 @@ void draw()
         text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 40);
       }
       
-      // serene -- arrow visual
-      //if (inArea() > 0)
-      //{
-      //  println(inArea());
-      //  int currentGroup = inArea();
-      //  // x: centreX + dir3.x / 3, y: centreY + dir3.y / 3 + 20
-      //  int jcurr = (currentGroup + 1) % numAreas;
-      //  PVector dir1curr = new PVector(lines[currentGroup][1][0] - lines[currentGroup][0][0], lines[currentGroup][0][1] - lines[currentGroup][1][1]);
-      //  PVector dir2curr = new PVector(lines[jcurr][1][0] - lines[jcurr][0][0], lines[jcurr][0][1] - lines[jcurr][1][1]);
-      //  PVector dir3curr = new PVector((dir1curr.x + dir2curr.x), (-(dir1curr.y + dir2curr.y)));
-      //  arrow(int(centreX + dir3curr.x / 3), int(centreY + dir3curr.y / 3 + 20), int(centreX + dir3curr.x / 3 - 20), int(centreY + dir3curr.y / 3 + 20));
-        
-      //}  
-      
       if(tapLetters[i] == " ")
       {
         text("-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
+        if (inArea() == 3) {
+          circle(centreX + dir3.x / 6, centreY + dir3.y / 6, 30);
+        }
       }
       else if(tapLetters[i] == "D")
       {
         text("<-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
+        if (inArea() == 5) {
+          circle(centreX + dir3.x / 6 + 5, centreY + dir3.y / 6 - 5, 40);
+        }
       }
       else
       {
         text(tapLetters[i], centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
+        if (inArea() == i && (tapLetters[i] == "y" || tapLetters[i] == "z")) {
+          circle(centreX + dir3.x / 6 + 5, centreY + dir3.y / 6 - 5, 40);
+        }
       }
       //text(i, lines[i][1][0], lines[i][1][1]);
     }
@@ -178,6 +187,7 @@ void draw()
 void arrow(int x1, int y1, int x2, int y2) {
   pushStyle();
   stroke(255,215,0);
+  strokeWeight(3);
   line(x1, y1, x2, y2);
   pushMatrix();
   translate(x2, y2);
@@ -189,6 +199,15 @@ void arrow(int x1, int y1, int x2, int y2) {
   popStyle();
 } 
 
+void circle(float x2, float y2, int rad) {
+    pushStyle();
+    stroke(255,215,0);
+    strokeWeight(4);
+    noFill();
+    ellipse(x2, y2, rad, rad);
+    popStyle();
+}
+  
 boolean didMouseClick(float x, float y, float w, float h) //simple function to do hit testing
 {
   return (mouseX > x && mouseX<x+w && mouseY>y && mouseY<y+h); //check to see if it is in button bounds
