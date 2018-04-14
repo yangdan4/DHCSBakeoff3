@@ -39,11 +39,12 @@ float pressMouseY = 0;
 float pressTime = 0;
 //finger lift time
 float liftTime = 0;
+float holdTime = 0;
 //swipe letters
-String [][] letters = {{"q", "r", "s", "t"}, {"u", "v", "w", "x"}, {"a", "b", "c", "d"}, {"e", "f", "g", "h"}, {"i", "j", "k", "l"},
-{"m", "n", "o", "p"}};
+String [][] letters = {{"u", "v", "w", "x"}, {"m", "n", "o", "p"}, {"e", "f", "g", "h"}, {"a", "b", "c", "d"}, {"i", "j", "k", "l"}, {"q", "r", "s", "t"}};
 //tap letters, empty strings mean noOp
 String [] tapLetters = {"y", "", "z", " ", "", "D"};
+String [] nums = {"20", "12", "4", "0", "8", "16"};
 
 //You can modify anything in here. This is just a basic implementation.
 void setup()
@@ -88,7 +89,60 @@ void draw()
     textAlign(CENTER);
     text("Click to start time!", 280, 150); //display this messsage until the user clicks!
   }
-
+  if(mousePressed)
+  {
+    holdTime = millis();
+    float currMouseX = mouseX;
+    float currMouseY = mouseY;
+    //direction of swipe
+    PVector dir = new PVector(currMouseX - pressMouseX, pressMouseY - currMouseY);
+    fill(255);
+    textSize(50);
+    if(sqrt(pow(dir.x, 2) + pow(dir.y, 2)) < 20 && holdTime - pressTime < 200)
+    {
+      /*if(inSomeArea != -1)
+      {
+        if(tapLetters[inSomeArea] == "D")
+        {
+          text("<-", centreX - 10, centreY);
+        }
+        else if(tapLetters[inSomeArea] == " ")
+        {
+          text("-", centreX - 10, centreY);
+        }
+        else
+        {
+          text(tapLetters[inSomeArea], centreX - 10, centreY);
+        }
+      }*/
+    }
+    else
+    {
+      if(inSomeArea != -1)
+      {
+        //println(dir);
+        //println(degrees(angle(dir, lin)));
+        //if angle between swipe direction and (1,1) is within some range then it's some letter
+        if(angle(dir, lin) <= TWO_PI && angle(dir, lin) > TWO_PI - PI / 2)
+        {
+          text(letters[inSomeArea][1], centreX - 15, centreY);
+        }
+        else if(angle(dir, lin) <= TWO_PI - PI / 2 && angle(dir, lin) > PI)
+        {
+          text(letters[inSomeArea][0], centreX - 15, centreY);
+        }
+        else if(angle(dir, lin) <= PI && angle(dir, lin) > PI / 2)
+        {
+          text(letters[inSomeArea][3], centreX - 15, centreY);
+        }
+        else if(angle(dir, lin) <= PI / 2 && angle(dir, lin) > 0)
+        {
+          text(letters[inSomeArea][2], centreX - 15, centreY);
+        }
+      }
+    }
+  }
+  textSize(24);
   if (startTime!=0)
   {
     //you will need something like the next 10 lines in your code. Output does not have to be within the 2 inch area!
@@ -113,6 +167,10 @@ void draw()
     stroke(0);
     strokeWeight(1);
     //draw lines and letters for groups
+    
+    
+    
+    
     for(int i = 0; i < numAreas; i++)
     {
       line(lines[i][0][0], lines[i][0][1], lines[i][1][0], lines[i][1][1]);
@@ -123,46 +181,47 @@ void draw()
       fill(255);
       
       // serene -- increase text font upon selection
-      if (inArea() == i && mousePressed) {
+      if (inSomeArea == i && mousePressed) {
         pushStyle();
-        textSize(30);
+        textSize(50);
         fill(255,215,0);
-        text(letters[i][0], int(mouseX-70), int(mouseY+10)); // left
-        arrow(int(mouseX), int(mouseY), int(mouseX-40), int(mouseY));
-        text(letters[i][1], int(mouseX-8), int(mouseY-55)); // top
-        arrow(int(mouseX), int(mouseY), int(mouseX), int(mouseY-40));
-        text(letters[i][2], int(mouseX+55), int(mouseY+10)); // right
-        arrow(int(mouseX), int(mouseY), int(mouseX+40), int(mouseY));
-        text(letters[i][3], int(mouseX-8), int(mouseY+70)); // bottom
-        arrow(int(mouseX), int(mouseY), int(mouseX), int(mouseY+40));
+        text(letters[inSomeArea][0], int(pressMouseX-80), int(pressMouseY+10)); // left
+        arrow(int(pressMouseX), int(pressMouseY), int(pressMouseX-40), int(pressMouseY));
+        text(letters[inSomeArea][1], int(pressMouseX-8), int(pressMouseY-55)); // top
+        arrow(int(pressMouseX), int(pressMouseY), int(pressMouseX), int(pressMouseY-40));
+        text(letters[inSomeArea][2], int(pressMouseX+55), int(pressMouseY+10)); // right
+        arrow(int(pressMouseX), int(pressMouseY), int(pressMouseX+40), int(pressMouseY));
+        text(letters[inSomeArea][3], int(pressMouseX-13), int(pressMouseY+70)); // bottom
+        arrow(int(pressMouseX), int(pressMouseY), int(pressMouseX), int(pressMouseY+40));
         popStyle();
       }
       else {
-        textSize(24);
-        text(letters[i][0], centreX + dir3.x / 3 - 20, centreY + dir3.y / 3 + 20);
-        text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3);
-        text(letters[i][2], centreX + dir3.x / 3 + 20, centreY + dir3.y / 3 + 20);
-        text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3 + 40);
+        textSize(40);
+        text(letters[i][0], centreX + dir3.x / 3 - 35, centreY + dir3.y / 3.5 + 20);
+        text(letters[i][1], centreX + dir3.x / 3, centreY + dir3.y / 3.5 - 10);
+        text(letters[i][2], centreX + dir3.x / 3 + 30, centreY + dir3.y / 3.5 + 20);
+        text(letters[i][3], centreX + dir3.x / 3, centreY + dir3.y / 3.5 + 50);
       }
+      //text(nums[i], centreX + dir3.x / 12 - 15, centreY + dir3.y / 12 + 5);
       
       if(tapLetters[i] == " ")
       {
         text("-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
-        if (inArea() == 3 && mousePressed) {
+        if (inSomeArea == 3 && mousePressed) {
           circle(centreX + dir3.x / 6, centreY + dir3.y / 6, 30);
         }
       }
       else if(tapLetters[i] == "D")
       {
         text("<-", centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
-        if (inArea() == 5 && mousePressed) {
+        if (inSomeArea == 5 && mousePressed) {
           circle(centreX + dir3.x / 6 + 5, centreY + dir3.y / 6 - 5, 40);
         }
       }
       else
       {
         text(tapLetters[i], centreX + dir3.x / 6 - 5, centreY + dir3.y / 6 + 5);
-        if (inArea() == i && (tapLetters[i] == "y" || tapLetters[i] == "z") && mousePressed) {
+        if (inSomeArea == i && (tapLetters[i] == "y" || tapLetters[i] == "z") && mousePressed) {
           circle(centreX + dir3.x / 6 + 5, centreY + dir3.y / 6 - 5, 40);
         }
       }
@@ -269,13 +328,16 @@ void mouseReleased()
   }
   //if don't move much and fast press and lift then it's tap
   //feel free to change this to whatever seems right for users
-  else if(abs(dir.x) < 2 && abs(dir.y) < 2 && liftTime - pressTime < 100)
+  else if(sqrt(pow(dir.x, 2) + pow(dir.y, 2)) < 20 && liftTime - pressTime < 200)
   {
     if(inSomeArea != -1)
     {
-      if(tapLetters[inSomeArea] == "D" && currentTyped.length() > 0)
+      if(tapLetters[inSomeArea] == "D")
       {
-        currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
+        if(currentTyped.length() > 0)
+        {
+          currentTyped = currentTyped.substring(0, currentTyped.length() - 1);
+        }
       }
       else
       {
